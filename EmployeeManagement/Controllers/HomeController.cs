@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace EmployeeManagement.Controllers
 {
+
     public class HomeController : Controller
     {
         private readonly IEmployeeRepository _employeeRepository;
@@ -16,25 +17,19 @@ namespace EmployeeManagement.Controllers
         {
             _employeeRepository = new MockEmployeeRepository();
         }
+
         public ViewResult Index()
         {
             var model = _employeeRepository.GetAllEmployee();
             return View(model);
         }
-
-        public ViewResult Details(int id)
+        public ViewResult Details(int? id)
         {
             HomeDetailsViewModel homeDetailsViewModel = new HomeDetailsViewModel()
             {
-                Employee = _employeeRepository.GetEmployee(1),
+                Employee = _employeeRepository.GetEmployee(id??1),
                 PageTitle = "Employee Details"
             };
-
-        
-
-            Employee model = _employeeRepository.GetEmployee(id);
-            ViewBag.Employee = model;
-            ViewBag.PageTitle = "Employee Details";
 
             return View(homeDetailsViewModel);
         }
