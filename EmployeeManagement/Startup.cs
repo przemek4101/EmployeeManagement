@@ -28,16 +28,18 @@ namespace EmployeeManagement
             {
                 app.UseDeveloperExceptionPage();
             }
+            app.UseStaticFiles();
+            app.UseRouting();
 
             app.UseMvc(routes =>
             {
                 routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}");
             });
 
-       
+
 
             //app.UseMvcWithDefaultRoute();
-            app.UseRouting();
+           
 
             app.UseEndpoints(endpoints =>
             {
