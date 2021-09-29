@@ -59,7 +59,8 @@ namespace EmployeeManagement.Controllers
             if(ModelState.IsValid)
             {
                 var user = new ApplicationUser
-                { UserName = model.Email,
+                { 
+                  UserName = model.Email,
                   Email = model.Email,
                   City = model.City
                 };
@@ -67,6 +68,12 @@ namespace EmployeeManagement.Controllers
 
                 if(result.Succeeded)
                 {
+
+                    if (signInManager.IsSignedIn(User) && User.IsInRole("Admin"))
+                    {
+                        return RedirectToAction("ListUsers", "Administration");
+                    }
+
                     await signInManager.SignInAsync(user, isPersistent: false);
                     return RedirectToAction("index", "home");
                 }
@@ -77,7 +84,7 @@ namespace EmployeeManagement.Controllers
                     ModelState.AddModelError("", error.Description);
                 }
             }
-            return View();
+            return View(model);
         }
 
         [HttpGet]
@@ -114,5 +121,11 @@ namespace EmployeeManagement.Controllers
             return View(model);
         }
 
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
     }
 }
