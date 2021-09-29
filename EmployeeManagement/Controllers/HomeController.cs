@@ -17,14 +17,14 @@ namespace EmployeeManagement.Controllers
     public class HomeController : Controller
     {
         private readonly IEmployeeRepository _employeeRepository;
-        private readonly IHostingEnvironment hostingEnvironment;
+        private readonly IHostingEnvironment _hostingEnvironment;
         private readonly ILogger logger;
 
         public HomeController(IEmployeeRepository employeeRepository, IHostingEnvironment hostingEnvironment, ILogger<HomeController> logger)
         {
         
             _employeeRepository = employeeRepository;
-            this.hostingEnvironment = hostingEnvironment;
+            this._hostingEnvironment = hostingEnvironment;
             this.logger = logger;
         }
 
@@ -37,9 +37,6 @@ namespace EmployeeManagement.Controllers
         [AllowAnonymous]
         public ViewResult Details(int? id)
         {
-            //throw new Exception("Error in Details View");
-            
-            
             Employee employee = _employeeRepository.GetEmployee(id.Value);
             if(employee == null)
             {
@@ -63,8 +60,9 @@ namespace EmployeeManagement.Controllers
         {
             return View();
         }
+
+
         [HttpGet]
-        [Authorize]
         public ViewResult Edit(int id)
         {
             Employee employee = _employeeRepository.GetEmployee(id);
@@ -86,6 +84,7 @@ namespace EmployeeManagement.Controllers
             if (ModelState.IsValid)
             {
                 Employee employee = _employeeRepository.GetEmployee(model.Id);
+
                 employee.Name = model.Name;
                 employee.Email = model.Email;
                 employee.Department = model.Department;
@@ -94,15 +93,15 @@ namespace EmployeeManagement.Controllers
                 {
                     if (model.ExistingPhotoPath != null)
                     {
-                        string filePath = Path.Combine(hostingEnvironment.WebRootPath, "images", model.ExistingPhotoPath);
+                        string filePath = Path.Combine(_hostingEnvironment.WebRootPath, "images", model.ExistingPhotoPath);
                         System.IO.File.Delete(filePath);
                     }
                         employee.PhotoPath = ProcessUploadedFile(model);       
                 }
 
-                Employee updatedEmployee = _employeeRepository.Update(employee);
+                _employeeRepository.Update(employee);
 
-                return RedirectToAction("index");
+                return RedirectToAction("index", new { id = employee.Id });
             }
 
             return View(model);
@@ -114,7 +113,7 @@ namespace EmployeeManagement.Controllers
             if (model.Photo != null)
             {
 
-                string uploadsFolder = Path.Combine(hostingEnvironment.WebRootPath, "images");
+                string uploadsFolder = Path.Combine(_hostingEnvironment.WebRootPath, "images");
                 uniqueFileName = Guid.NewGuid().ToString() + "_" + model.Photo.FileName;
                 string filePath = Path.Combine(uploadsFolder, uniqueFileName);
 
